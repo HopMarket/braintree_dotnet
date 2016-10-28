@@ -1,0 +1,590 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Braintree-3.0.1</name>
+    </assembly>
+    <members>
+        <member name="T:Braintree.Address">
+            <summary>
+            An address returned by the Braintree Gateway
+            </summary>
+            <remarks>
+            An address can belong to:
+            <ul>
+              <li>a <see cref="T:Braintree.CreditCard"/> as the billing address</li>
+              <li>a <see cref="T:Braintree.Customer"/> as an address</li>
+              <li>a <see cref="T:Braintree.Transaction"/> as a billing or shipping address</li>
+            </ul>
+            </remarks>
+            <example>
+            Addresses can be retrieved via the gateway using the associated customer Id and address Id:
+            <code>
+                Address address = gateway.Address.Find("customerId", "addressId");
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.AddressGateway">
+            <summary>
+            Provides operations for creating, finding, updating, and deleting addresses in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.AddressRequest">
+            <summary>
+            A class for building requests to manipulate <see cref="T:Braintree.Address"/> records in the vault.
+            </summary>
+            <example>
+            An address request can be constructed as follows:
+            <code>
+             var addressRequest = new AddressRequest
+             {
+                 FirstName = "Michael",
+                 LastName = "Angelo",
+                 Company = "Angelo Co.",
+                 StreetAddress = "1 E Main St",
+                 ExtendedAddress = "Apt 3",
+                 Locality = "Chicago",
+                 Region = "IL",
+                 PostalCode = "60622",
+                 CountryName = "United States of America"
+            };
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.ClientTokenGateway">
+            <summary>
+            Generates client tokens, which are used to authenticate requests clients make directly
+              on behalf of merchants
+            </summary>
+        </member>
+        <member name="T:Braintree.ClientTokenRequest">
+            <summary>
+            A class for building requests to generate client tokens, which are used
+              to authenticate requests clients make directly on behalf of merchants
+            </summary>
+        </member>
+        <member name="T:Braintree.BraintreeGateway">
+             <summary>
+             This is the primary interface to the Braintree Gateway.
+             </summary>
+             <remarks>
+             This class interact with:
+             <ul>
+             <li><see cref="T:Braintree.AddressGateway">Addresses</see></li>
+             <li><see cref="T:Braintree.CreditCardGateway">CreditCards</see></li>
+             <li><see cref="T:Braintree.CustomerGateway">Customers</see></li>
+             <li><see cref="T:Braintree.SubscriptionGateway">Subscriptions</see></li>
+             <li><see cref="T:Braintree.TransactionGateway">Transactions</see></li>
+             </ul>
+             </remarks>
+             <example>
+             Quick Start Example:
+             <code>
+             using System;
+             using Braintree;
+            
+             namespace BraintreeExample
+             {
+                 class Program
+                 {
+                     static void Main(string[] args)
+                     {
+                         var gateway = new BraintreeGateway
+                         {
+                             Environment = Braintree.Environment.SANDBOX,
+                             MerchantId = "the_merchant_id",
+                             PublicKey = "a_public_key",
+                             PrivateKey = "a_private_key"
+                         };
+            
+                         var request = new TransactionRequest
+                         {
+                             Amount = 100.00M,
+                             CreditCard = new CreditCardRequest
+                             {
+                                 Number = "5105105105105100",
+                                 ExpirationDate = "05/12"
+                             }
+                         };
+            
+                         Transaction transaction = gateway.Transaction.Sale(request).Target;
+            
+                         Console.WriteLine(string.Format("Transaction ID: {0}", transaction.Id));
+                         Console.WriteLine(string.Format("Status: {0}", transaction.Status));
+                     }
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="T:Braintree.CreditCard">
+            <summary>
+            A credit card returned by the Braintree Gateway
+            </summary>
+            <remarks>
+            A credit card can belong to:
+            <ul>
+              <li>a <see cref="T:Braintree.Customer"/> as a stored credit card</li>
+              <li>a <see cref="T:Braintree.Transaction"/> as the credit card used for the transaction</li>
+            </ul>
+            </remarks>
+            <example>
+            Credit Cards can be retrieved via the gateway using the associated credit card token:
+            <code>
+                CreditCard creditCard = gateway.CreditCard.Find("token");
+            </code>
+            For more information about Credit Cards, see <a href="http://www.braintreepayments.com/gateway/credit-card-api" target="_blank">http://www.braintreepaymentsolutions.com/gateway/credit-card-api</a><br />
+            For more information about Credit Card Verifications, see <a href="http://www.braintreepayments.com/gateway/credit-card-verification-api" target="_blank">http://www.braintreepaymentsolutions.com/gateway/credit-card-verification-api</a>
+            </example>
+        </member>
+        <member name="T:Braintree.CreditCardGateway">
+            <summary>
+            Provides operations for creating, finding, updating, and deleting credit cards in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.CreditCardRequest">
+            <summary>
+            A class for building requests to manipulate <see cref="T:Braintree.CreditCard"/> records in the vault.
+            </summary>
+            <example>
+            A credit card request can be constructed as follows:
+            <code>
+            CreditCardRequest createRequest = new CreditCardRequest
+            {
+                CustomerId = customer.Id,
+                CardholderName = "John Doe",
+                Number = "5105105105105100",
+                ExpirationDate = "05/12",
+                BillingAddress = new AddressRequest
+                {
+                    PostalCode = "44444"
+                },
+                Options = new CreditCardOptionsRequest
+                {
+                    VerifyCard = true
+                }
+            };
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.CreditCardVerificationGateway">
+            <summary>
+            Provides operations for finding verifications
+            </summary>
+        </member>
+        <member name="T:Braintree.Customer">
+            <summary>
+            A customer returned by the Braintree Gateway
+            </summary>
+            <example>
+            Customers can be retrieved via the gateway using the associated customer id:
+            <code>
+                Customer customer = gateway.Customer.Find("customerId");
+            </code>
+            For more information about Customers, see <a href="http://www.braintreepayments.com/gateway/customer-api" target="_blank">http://www.braintreepaymentsolutions.com/gateway/customer-api</a>
+            </example>
+        </member>
+        <member name="T:Braintree.CustomerGateway">
+            <summary>
+            Provides operations for creating, finding, updating, and deleting customers in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.CustomerRequest">
+            <summary>
+            A class for building requests to manipulate <see cref="T:Braintree.Customer"/> records in the vault.
+            </summary>
+            <example>
+            A customer request can be constructed as follows:
+            <code>
+            var createRequest = new CustomerRequest
+            {
+                Id = id,
+                FirstName = "Michael",
+                LastName = "Angelo",
+                Company = "Some Company",
+                Email = "mike.a@example.com",
+                Phone = "312.555.1111",
+                Fax = "312.555.1112",
+                Website = "www.example.com",
+                CreditCard = new CreditCardRequest
+                {
+                    Number = "5105105105105100",
+                    ExpirationDate = "05/12",
+                    CVV = "123",
+                    CardholderName = "Michael Angelo",
+                    BillingAddress = new AddressRequest()
+                    {
+                        FirstName = "Mike",
+                        LastName = "Smith",
+                        Company = "Smith Co.",
+                        StreetAddress = "1 W Main St",
+                        ExtendedAddress = "Suite 330",
+                        Locality = "Chicago",
+                        Region = "IL",
+                        PostalCode = "60622",
+                        CountryName = "United States of America"
+                    }
+                }
+            };
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.IAddressGateway">
+            <summary>
+            Provides operations for creating, finding, updating, and deleting addresses in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.IBraintreeGateway">
+             <summary>
+             This is the primary interface to the Braintree Gateway.
+             </summary>
+             <remarks>
+             This class interacts with:
+             <ul>
+             <li><see cref="T:Braintree.AddressGateway">Addresses</see></li>
+             <li><see cref="T:Braintree.CreditCardGateway">CreditCards</see></li>
+             <li><see cref="T:Braintree.CustomerGateway">Customers</see></li>
+             <li><see cref="T:Braintree.SubscriptionGateway">Subscriptions</see></li>
+             <li><see cref="T:Braintree.TransactionGateway">Transactions</see></li>
+             </ul>
+             </remarks>
+             <example>
+             Quick Start Example:
+             <code>
+             using System;
+             using Braintree;
+            
+             namespace BraintreeExample
+             {
+                 class Program
+                 {
+                     static void Main(string[] args)
+                     {
+                         var gateway = new BraintreeGateway
+                         {
+                             Environment = Braintree.Environment.SANDBOX,
+                             MerchantId = "the_merchant_id",
+                             PublicKey = "a_public_key",
+                             PrivateKey = "a_private_key"
+                         };
+            
+                         var request = new TransactionRequest
+                         {
+                             Amount = 100.00M,
+                             PaymentMethodNonce = nonceFromTheClient
+                         };
+            
+                         Transaction transaction = gateway.Transaction.Sale(request).Target;
+            
+                         Console.WriteLine(string.Format("Transaction ID: {0}", transaction.Id));
+                         Console.WriteLine(string.Format("Status: {0}", transaction.Status));
+                     }
+                 }
+             }
+             </code>
+             </example>
+        </member>
+        <member name="T:Braintree.IClientTokenGateway">
+            <summary>
+            Generates client tokens, which are used to authenticate requests clients make directly
+              on behalf of merchants
+            </summary>
+        </member>
+        <member name="T:Braintree.ICreditCardGateway">
+            <summary>
+            Provides operations for creating, finding, updating, and deleting credit cards in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.ICreditCardVerificationGateway">
+            <summary>
+            Provides operations for finding verifications
+            </summary>
+        </member>
+        <member name="T:Braintree.ICustomerGateway">
+            <summary>
+            Provides operations for creating, finding, updating, and deleting customers in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.ISubscriptionGateway">
+            <summary>
+            Provides operations for creating, finding, updating, searching, and deleting subscriptions in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.ITestTransactionGateway">
+            <summary>
+            Provides test operations for settling, settlement confirming, settlement pending, and settlement declining for transactions in the sandbox vault
+            </summary>
+        </member>
+        <member name="T:Braintree.ITransactionGateway">
+            <summary>
+            Provides operations for sales, credits, refunds, voids, submitting for settlement, and searching for transactions in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.SettlementBatchSummaryRequest">
+            <summary>
+            A class for building requests to pull settlement batch result summaries.
+            </summary>
+            <example>
+            A settlement batch summary request can be constructed as follows:
+            <code>
+            SettlementBatchSummaryRequest request = new SettlementBatchSummaryRequest
+            {
+                SettlementDate = DateTime,
+                GroupByCustomField = 'my_custom_field'
+            };
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.SubscriptionDurationUnit">
+            <summary>
+            The available duration units for <see cref="T:Braintree.Subscription"/>
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionDurationUnit.DAY">
+            <summary>
+            A duration unit used for subscription periods measured in days
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionDurationUnit.MONTH">
+            <summary>
+            A duration unit used for subscription periods measured in months
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionDurationUnit.UNRECOGNIZED">
+            <summary>
+            A placeholder for unrecognized duration units, implemented for future compatibility
+            </summary>
+        </member>
+        <member name="T:Braintree.SubscriptionStatus">
+            <summary>
+            The possible statuses for <see cref="T:Braintree.Subscription"/>
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionStatus.ACTIVE">
+            <summary>
+            Indicates that the <see cref="T:Braintree.Subscription"/> is currently active and in good standing
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionStatus.CANCELED">
+            <summary>
+            Indicates that the <see cref="T:Braintree.Subscription"/> has been canceled and will not be billed
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionStatus.EXPIRED">
+            <summary>
+            Indicates that the <see cref="T:Braintree.Subscription"/> has reached the end of the specified billing cycles
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionStatus.PAST_DUE">
+            <summary>
+            Indicates that the <see cref="T:Braintree.Subscription"/> is currently active but past due
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionStatus.PENDING">
+            <summary>
+            Indicates that the <see cref="T:Braintree.Subscription"/> is currently pending
+            </summary>
+        </member>
+        <member name="F:Braintree.SubscriptionStatus.UNRECOGNIZED">
+            <summary>
+            A placeholder for unrecognized subscription statuses, implemented for future compatibility
+            </summary>
+        </member>
+        <member name="T:Braintree.Subscription">
+            <summary>
+            A subscription returned by the Braintree Gateway
+            </summary>
+            <example>
+            Subscriptions can be retrieved via the gateway using the associated subscription id:
+            <code>
+                Subscription subscription = gateway.Subscription.Find("subscriptionId");
+            </code>
+            For more information about Subscriptions, see <a href="http://www.braintreepayments.com/gateway/subscription-api" target="_blank">http://www.braintreepaymentsolutions.com/gateway/subscription-api</a>
+            </example>
+        </member>
+        <member name="T:Braintree.SubscriptionGateway">
+            <summary>
+            Provides operations for creating, finding, updating, searching, and deleting subscriptions in the vault
+            </summary>
+        </member>
+        <member name="M:Braintree.SubscriptionGateway.Search(Braintree.SubscriptionSearchRequest)">
+            <summary>
+            Search for subscriptions based on PlanId, DaysPastDue and Status
+            </summary>
+            <example>
+            Quick Start Example:
+            </example>
+            <code>
+            BraintreeGateway gateway = new BraintreeGateway(...);
+            gateway.Subscription.Search(delegate(SubscriptionSearchRequest search) {
+                search.PlanId().StartsWith("abc");
+                search.DaysPastDue().Is("30");
+                search.Status().IncludedIn(Subscription.Status.ACTIVE, Subscription.Status.CANCELED);
+            });
+            </code>
+        </member>
+        <member name="T:Braintree.SubscriptionRequest">
+            <summary>
+            A class for building requests to manipulate <see cref="T:Braintree.Subscription"/> records in the vault.
+            </summary>
+            <example>
+            A subscription request can be constructed as follows:
+            <code>
+            SubscriptionRequest request = new SubscriptionRequest
+            {
+                PaymentMethodToken = "token",
+                PlanId = "planId",
+                HasTrialPeriod = true,
+                TrialDuration = 2,
+                TrialDurationUnit = SubscriptionDurationUnit.MONTH
+            };
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.Transaction">
+            <summary>
+            A transaction returned by the Braintree Gateway
+            </summary>
+            <example>
+            Transactions can be retrieved via the gateway using the associated transaction id:
+            <code>
+                Transaction transaction = gateway.Transaction.Find("transactionId");
+            </code>
+            For more information about Transactions, see <a href="http://www.braintreepayments.com/gateway/transaction-api" target="_blank">http://www.braintreepaymentsolutions.com/gateway/transaction-api</a>
+            </example>
+        </member>
+        <member name="M:Braintree.Transaction.GetVaultCreditCard">
+             <summary>
+             Returns the current <see cref="P:Braintree.Transaction.CreditCard"/> associated with this transaction if one exists
+             </summary>
+             <returns>
+             The current <see cref="P:Braintree.Transaction.CreditCard"/> associated with this transaction if one exists
+             </returns>
+             <remarks>
+             When retrieving a transaction from the gateway, the credit card used in the transaction is returned in the response.
+             If the credit card record has been updated in the vault since the transaction occurred, this method can be used to
+             retrieve the updated credit card information.  This is typically useful in situations where a transaction fails, for
+             example when a credit card expires, and a new transaction needs to be submitted once the new credit card information
+             has been submitted.
+             </remarks>
+             <example>
+             The vault <see cref="P:Braintree.Transaction.CreditCard"/> can be retrieved from the transaction directly:
+             <code>
+                 Transaction transaction = gateway.Transaction.Find("transactionId");
+                 CreditCard creditCard = transaction.GetVaultCreditCard();
+             </code>
+             </example>
+             <example>
+             Failed transactions can be resubmitted with updated <see cref="P:Braintree.Transaction.CreditCard"/> information:
+             <code>
+                 Transaction failedTransaction = gateway.Transaction.Find("transactionId");
+                 CreditCard updatedCreditCard = transaction.GetVaultCreditCard();
+            
+                 TransactionRequest request = new TransactionRequest
+                 {
+                     Amount = failedTransaction.Amount,
+                     PaymentMethodToken = updatedCreditCard.Token
+                 };
+            
+                 Result&lt;Transaction&gt; result = gateway.Transaction.Sale(request);
+             </code>
+             </example>
+        </member>
+        <member name="M:Braintree.Transaction.GetVaultCustomer">
+            <summary>
+            Returns the current <see cref="P:Braintree.Transaction.Customer"/> associated with this transaction if one exists
+            </summary>
+            <returns>
+            The current <see cref="P:Braintree.Transaction.Customer"/> associated with this transaction if one exists
+            </returns>
+            <remarks>
+            When retrieving a transaction from the gateway, the customer associated with the transaction is returned in the response.
+            If the customer record has been updated in the vault since the transaction occurred, this method can be used to
+            retrieve the updated customer information.
+            </remarks>
+            <example>
+            The vault <see cref="P:Braintree.Transaction.Customer"/> can be retrieved from the transaction directly:
+            <code>
+                Transaction transaction = gateway.Transaction.Find("transactionId");
+                Customer customer = transaction.GetVaultCustomer();
+            </code>
+            </example>
+        </member>
+        <member name="M:Braintree.Transaction.GetVaultBillingAddress">
+            <summary>
+            Returns the current billing <see cref="T:Braintree.Address"/> associated with this transaction if one exists
+            </summary>
+            <returns>
+            The current billing <see cref="T:Braintree.Address"/> associated with this transaction if one exists
+            </returns>
+            <remarks>
+            When retrieving a transaction from the gateway, the billing address associated with the transaction is returned in the response.
+            If the billing address has been updated in the vault since the transaction occurred, this method can be used to
+            retrieve the updated billing address.
+            </remarks>
+            <example>
+            The vault billing <see cref="T:Braintree.Address"/> can be retrieved from the transaction directly:
+            <code>
+                Transaction transaction = gateway.Transaction.Find("transactionId");
+                Address billingAddress = transaction.GetVaultBillingAddress();
+            </code>
+            </example>
+        </member>
+        <member name="M:Braintree.Transaction.GetVaultShippingAddress">
+            <summary>
+            Returns the current shipping <see cref="T:Braintree.Address"/> associated with this transaction if one exists
+            </summary>
+            <returns>
+            The current shipping <see cref="T:Braintree.Address"/> associated with this transaction if one exists
+            </returns>
+            <remarks>
+            When retrieving a transaction from the gateway, the shipping address associated with the transaction is returned in the response.
+            If the shipping address has been updated in the vault since the transaction occurred, this method can be used to
+            retrieve the updated shipping address.
+            </remarks>
+            <example>
+            The vault shipping <see cref="T:Braintree.Address"/> can be retrieved from the transaction directly:
+            <code>
+                Transaction transaction = gateway.Transaction.Find("transactionId");
+                Address shippingAddress = transaction.GetVaultShippingAddress();
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.TransactionGateway">
+            <summary>
+            Provides operations for sales, credits, refunds, voids, submitting for settlement, and searching for transactions in the vault
+            </summary>
+        </member>
+        <member name="T:Braintree.TransactionRequest">
+            <summary>
+            A class for building requests to manipulate <see cref="T:Braintree.Transaction"/> records in the vault.
+            </summary>
+            <example>
+            A transaction request can be constructed as follows:
+            <code>
+            var request = new TransactionRequest
+            {
+                Amount = SandboxValues.TransactionAmount.AUTHORIZE,
+                CreditCard = new CreditCardRequest
+                {
+                    Number = SandboxValues.CreditCardNumber.VISA,
+                    ExpirationDate = "05/2009",
+                }
+            };
+            </code>
+            </example>
+        </member>
+        <member name="T:Braintree.ValidationErrors">
+            <summary>
+            A collection of Validation Errors returned by the Braintree Gateway
+            </summary>
+            <example>
+            For more information about Validation Errors, see <a href="http://www.braintreepayments.com/gateway/validation-errors" target="_blank">http://www.braintreepaymentsolutions.com/gateway/validation-errors</a>
+            </example>
+        </member>
+        <member name="T:Braintree.TestTransactionGateway">
+            <summary>
+            Provides test operations for settling, settlement confirming, settlement pending, and settlement declining for transactions in the sandbox vault
+            </summary>
+        </member>
+    </members>
+</doc>
